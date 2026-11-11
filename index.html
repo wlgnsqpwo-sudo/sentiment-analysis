@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI 감성 분석기 - 텍스트의 감정을 분석해 드려요</title>
+  <meta name="description" content="한국어 문장이나 짧은 글을 입력하면 AI가 긍정, 부정, 중립 감성을 분석하고 근거를 알려드립니다.">
+  <link rel="stylesheet" href="/public/css/styles.css">
+</head>
+<body>
+  <!-- 최상위 래퍼 (가운데 정렬 및 최대 너비 제어) -->
+  <div class="app-container">
+    
+    <!-- 상단 헤더 영역 -->
+    <header class="app-header">
+      <div class="header-logo">
+        <span class="logo-icon" aria-hidden="true">💬</span>
+        <h1 class="logo-title">감성 분석기</h1>
+      </div>
+      <button type="button" class="icon-button" id="btnHelp" aria-label="도움말 열기" title="도움말">
+        <span aria-hidden="true">ℹ️</span>
+      </button>
+    </header>
+
+    <!-- 메인 콘텐츠 영역 -->
+    <main class="main-content">
+      
+      <!-- 서비스 소개 섹션 -->
+      <section class="intro-section">
+        <h2 class="intro-title">텍스트의 감정을 분석해 드려요</h2>
+        <p class="intro-desc">
+          문장이나 글을 입력하면 AI가 <strong>긍정, 부정, 중립</strong> 결과와 분석 이유를 알려드려요.
+        </p>
+      </section>
+
+      <!-- 빠른 예시 문장 선택 영역 (사용성 증대) -->
+      <section class="sample-chips-section" aria-label="예시 문장 선택">
+        <span class="chips-label">예시 문장:</span>
+        <div class="chips-group">
+          <button type="button" class="chip-button" data-sample="오늘 배송받은 상품이 너무 마음에 들고 품질도 기대 이상이네요!">#긍정 예시</button>
+          <button type="button" class="chip-button" data-sample="주문한 지 일주일이 지났는데 아무런 연락도 없고 배송도 늦네요.">#부정 예시</button>
+          <button type="button" class="chip-button" data-sample="내일 회의는 오후 2시 본관 3층 회의실에서 진행될 예정입니다.">#중립 예시</button>
+        </div>
+      </section>
+
+      <!-- 입력 카드 영역 -->
+      <section class="card input-card">
+        <form id="sentimentForm" novalidate>
+          <div class="input-header">
+            <label for="inputText" class="input-label">분석할 문장 입력</label>
+            <span class="char-counter" id="charCounter" aria-live="polite">0 / 2,000자</span>
+          </div>
+
+          <div class="textarea-wrapper">
+            <textarea
+              id="inputText"
+              name="text"
+              class="sentiment-textarea"
+              placeholder="분석하고 싶은 문장이나 글을 입력해 주세요. (최대 2,000자)"
+              rows="6"
+              maxlength="2000"
+              required
+            ></textarea>
+          </div>
+
+          <!-- 입력 안내 및 클라이언트 측 에러 메시지 노출 영역 -->
+          <div class="input-feedback" id="inputFeedback" role="alert" aria-live="assertive" hidden></div>
+
+          <!-- 감성 분석 실행 버튼 -->
+          <button type="submit" class="submit-button" id="btnSubmit">
+            <span class="btn-spinner" id="btnSpinner" aria-hidden="true" hidden></span>
+            <span class="btn-text" id="btnText">감성 분석하기</span>
+          </button>
+        </form>
+      </section>
+
+      <!-- 로딩 상태 표시 영역 -->
+      <section class="status-card loading-card" id="loadingSection" aria-live="polite" hidden>
+        <div class="spinner-circle"></div>
+        <p class="loading-message">AI가 문장의 감성을 꼼꼼히 분석하고 있어요...</p>
+        <span class="loading-sub">잠시만 기다려 주세요.</span>
+      </section>
+
+      <!-- 결과 표시 카드 영역 -->
+      <section class="card result-card" id="resultSection" aria-live="polite" hidden>
+        <div class="result-header">
+          <span class="result-badge" id="sentimentBadge">긍정</span>
+          <span class="confidence-text" id="confidenceValue">신뢰도 95%</span>
+        </div>
+
+        <div class="result-body">
+          <h3 class="result-subheading">분석 이유</h3>
+          <p class="result-reason" id="resultReason"></p>
+        </div>
+
+        <div class="result-footer">
+          <p class="disclaimer-text">
+            * 신뢰도는 AI 모델의 추정치이며 실제 정답 확률을 보증하지 않습니다.
+          </p>
+        </div>
+      </section>
+
+      <!-- 서버/네트워크 오류 표시 카드 영역 -->
+      <section class="card error-card" id="errorSection" role="alert" aria-live="assertive" hidden>
+        <div class="error-icon" aria-hidden="true">⚠️</div>
+        <div class="error-content">
+          <h3 class="error-title">분석을 완료하지 못했습니다</h3>
+          <p class="error-message" id="errorMessage">오류 메시지가 여기에 표시됩니다.</p>
+        </div>
+        <button type="button" class="retry-button" id="btnRetry">다시 시도하기</button>
+      </section>
+
+    </main>
+
+    <!-- 하단 보조 메뉴/내비게이션 바 -->
+    <nav class="bottom-nav" aria-label="하단 보조 내비게이션">
+      <button type="button" class="nav-item active" id="navAnalyze">
+        <span class="nav-icon" aria-hidden="true">📊</span>
+        <span class="nav-text">분석하기</span>
+      </button>
+      <button type="button" class="nav-item" id="navGuide">
+        <span class="nav-icon" aria-hidden="true">📖</span>
+        <span class="nav-text">이용 안내</span>
+      </button>
+    </nav>
+
+    <!-- 도움말 모달 (접근성 고려 다이얼로그) -->
+    <dialog class="help-dialog" id="helpDialog">
+      <div class="dialog-header">
+        <h3 class="dialog-title">서비스 이용 안내</h3>
+        <button type="button" class="close-button" id="btnCloseHelp" aria-label="도움말 닫기">✕</button>
+      </div>
+      <div class="dialog-body">
+        <h4>1. 감성 분류 기준</h4>
+        <ul>
+          <li><strong>긍정:</strong> 기쁨, 만족, 감사, 칭찬, 기대감 등의 감정</li>
+          <li><strong>부정:</strong> 불만, 아쉬움, 슬픔, 분노, 비판 등의 감정</li>
+          <li><strong>중립:</strong> 사실 전달, 정보 안내, 감정이 섞이지 않은 글</li>
+        </ul>
+        <h4>2. 주의사항</h4>
+        <p>
+          개인정보 보호를 위해 사용자가 입력한 원문 텍스트는 서버에 저장되지 않습니다. 신뢰도 수치는 AI 모델의 판단 확신도를 나타냅니다.
+        </p>
+      </div>
+    </dialog>
+
+  </div>
+
+  <!-- 프론트엔드 비즈니스 로직 스크립트 연결 -->
+  <script src="/public/js/app.js"></script>
+</body>
+</html>
+

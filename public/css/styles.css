@@ -1,0 +1,509 @@
+/* ==========================================================================
+   styles.css - 감성 분석 반응형 웹 스타일시트
+   기반 지침: docs/02-ui-guidelines.md
+   모바일 최우선(Mobile First), 미니멀 카드형 디자인, 명도 대비 및 접근성 준수
+   ========================================================================== */
+
+/* 1. 디자인 토큰 및 CSS 변수 */
+:root {
+  --color-page: #f5f5f7;
+  --color-surface: #ffffff;
+  --color-text: #202124;
+  --color-muted: #5f6368;
+  --color-border: #e0e0e6;
+  --color-primary: #5c27db;
+  --color-primary-hover: #4a1bbd;
+  --color-primary-light: #f1edfc;
+
+  /* 감성 라벨별 테마 색상 (충분한 대비 확보) */
+  --color-positive: #0d824d;
+  --color-positive-bg: #e6f4ea;
+  --color-negative: #d93025;
+  --color-negative-bg: #fce8e6;
+  --color-neutral: #5f6368;
+  --color-neutral-bg: #f1f3f4;
+
+  /* 오류 색상 */
+  --color-error-text: #c5221f;
+  --color-error-bg: #fdf2f2;
+  --color-error-border: #fad2cf;
+
+  /* 곡률 및 여백 */
+  --radius-card: 18px;
+  --radius-control: 12px;
+  --radius-badge: 9999px;
+  --space-page: 16px;
+  --shadow-card: 0 4px 18px rgba(20, 20, 35, 0.06);
+
+  /* 타이포그래피 */
+  --font-family: -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Pretendard", "Segoe UI", Roboto, sans-serif;
+}
+
+/* 2. 전역 리셋 및 기본 설정 */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: var(--font-family);
+  background-color: var(--color-page);
+  color: var(--color-text);
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  min-height: 100vh;
+}
+
+/* 3. 앱 컨테이너 (최대 너비 720px 및 중앙 정렬) */
+.app-container {
+  max-width: 720px;
+  margin: 0 auto;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  padding: 0 var(--space-page) 80px; /* 하단 탭바 여백 확보 */
+  position: relative;
+}
+
+/* 4. 상단 헤더 */
+.app-header {
+  height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid var(--color-border);
+  margin-bottom: 20px;
+}
+
+.header-logo {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.logo-icon {
+  font-size: 1.5rem;
+}
+
+.logo-title {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--color-text);
+}
+
+.icon-button {
+  background: none;
+  border: none;
+  font-size: 1.25rem;
+  cursor: pointer;
+  padding: 8px;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-muted);
+  transition: background-color 0.2s;
+}
+
+.icon-button:hover,
+.icon-button:focus-visible {
+  background-color: var(--color-border);
+  outline: none;
+}
+
+/* 5. 소개 섹션 */
+.intro-section {
+  margin-bottom: 20px;
+}
+
+.intro-title {
+  font-size: 1.35rem;
+  font-weight: 800;
+  margin-bottom: 6px;
+  letter-spacing: -0.02em;
+}
+
+.intro-desc {
+  font-size: 0.95rem;
+  color: var(--color-muted);
+}
+
+/* 6. 빠른 예시 칩 영역 */
+.sample-chips-section {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 16px;
+  overflow-x: auto;
+  padding-bottom: 4px;
+}
+
+.chips-label {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--color-muted);
+  white-space: nowrap;
+}
+
+.chips-group {
+  display: flex;
+  gap: 8px;
+}
+
+.chip-button {
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-badge);
+  padding: 6px 12px;
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: var(--color-text);
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.2s ease;
+}
+
+.chip-button:hover,
+.chip-button:focus-visible {
+  border-color: var(--color-primary);
+  color: var(--color-primary);
+  background-color: var(--color-primary-light);
+  outline: none;
+}
+
+/* 7. 공통 카드 스타일 */
+.card {
+  background-color: var(--color-surface);
+  border-radius: var(--radius-card);
+  padding: 20px;
+  box-shadow: var(--shadow-card);
+  border: 1px solid var(--color-border);
+  margin-bottom: 18px;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+/* 8. 입력 카드 */
+.input-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.input-label {
+  font-size: 0.95rem;
+  font-weight: 600;
+}
+
+.char-counter {
+  font-size: 0.85rem;
+  color: var(--color-muted);
+}
+
+.textarea-wrapper {
+  margin-bottom: 14px;
+}
+
+.sentiment-textarea {
+  width: 100%;
+  border: 1.5px solid var(--color-border);
+  border-radius: var(--radius-control);
+  padding: 14px;
+  font-family: inherit;
+  font-size: 0.95rem;
+  line-height: 1.6;
+  resize: vertical;
+  min-height: 130px;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.sentiment-textarea:focus {
+  outline: none;
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px var(--color-primary-light);
+}
+
+.input-feedback {
+  color: var(--color-error-text);
+  background-color: var(--color-error-bg);
+  border: 1px solid var(--color-error-border);
+  border-radius: 8px;
+  padding: 8px 12px;
+  font-size: 0.85rem;
+  margin-bottom: 14px;
+}
+
+.submit-button {
+  width: 100%;
+  height: 50px;
+  background-color: var(--color-primary);
+  color: #ffffff;
+  border: none;
+  border-radius: var(--radius-control);
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: background-color 0.2s ease;
+}
+
+.submit-button:hover:not(:disabled) {
+  background-color: var(--color-primary-hover);
+}
+
+.submit-button:disabled {
+  background-color: #c4c4d0;
+  cursor: not-allowed;
+}
+
+/* 9. 로딩 상태 카드 */
+.status-card {
+  text-align: center;
+  padding: 30px 20px;
+  border-radius: var(--radius-card);
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border);
+  margin-bottom: 18px;
+}
+
+.spinner-circle {
+  width: 38px;
+  height: 38px;
+  border: 3.5px solid var(--color-primary-light);
+  border-top-color: var(--color-primary);
+  border-radius: 50%;
+  margin: 0 auto 14px;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.loading-message {
+  font-size: 1rem;
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+
+.loading-sub {
+  font-size: 0.85rem;
+  color: var(--color-muted);
+}
+
+/* 10. 결과 카드 */
+.result-card {
+  border-left: 6px solid var(--color-neutral);
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+.result-card.positive {
+  border-left-color: var(--color-positive);
+}
+
+.result-card.negative {
+  border-left-color: var(--color-negative);
+}
+
+.result-card.neutral {
+  border-left-color: var(--color-neutral);
+}
+
+.result-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 14px;
+}
+
+.result-badge {
+  display: inline-block;
+  padding: 6px 14px;
+  border-radius: var(--radius-badge);
+  font-weight: 700;
+  font-size: 0.95rem;
+}
+
+.result-badge.positive {
+  background-color: var(--color-positive-bg);
+  color: var(--color-positive);
+}
+
+.result-badge.negative {
+  background-color: var(--color-negative-bg);
+  color: var(--color-negative);
+}
+
+.result-badge.neutral {
+  background-color: var(--color-neutral-bg);
+  color: var(--color-neutral);
+}
+
+.confidence-text {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--color-text);
+}
+
+.result-subheading {
+  font-size: 0.85rem;
+  color: var(--color-muted);
+  margin-bottom: 6px;
+  font-weight: 600;
+}
+
+.result-reason {
+  font-size: 1rem;
+  line-height: 1.6;
+  color: var(--color-text);
+  margin-bottom: 16px;
+}
+
+.result-footer {
+  border-top: 1px dashed var(--color-border);
+  padding-top: 10px;
+}
+
+.disclaimer-text {
+  font-size: 0.75rem;
+  color: var(--color-muted);
+}
+
+/* 11. 에러 카드 */
+.error-card {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  background-color: var(--color-error-bg);
+  border-color: var(--color-error-border);
+}
+
+.error-title {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--color-error-text);
+  margin-bottom: 4px;
+}
+
+.error-message {
+  font-size: 0.9rem;
+  color: #5c1917;
+}
+
+.retry-button {
+  align-self: flex-start;
+  padding: 8px 16px;
+  background-color: #ffffff;
+  border: 1px solid var(--color-error-border);
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 0.85rem;
+  color: var(--color-error-text);
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.retry-button:hover {
+  background-color: #fbe6e5;
+}
+
+/* 12. 하단 보조 내비게이션 */
+.bottom-nav {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 60px;
+  background-color: #ffffff;
+  border-top: 1px solid var(--color-border);
+  display: flex;
+  justify-content: center;
+  gap: 40px;
+  z-index: 100;
+}
+
+.nav-item {
+  background: none;
+  border: none;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  color: var(--color-muted);
+  cursor: pointer;
+  padding: 6px 14px;
+  font-size: 0.75rem;
+  font-weight: 500;
+}
+
+.nav-item.active {
+  color: var(--color-primary);
+  font-weight: 700;
+}
+
+.nav-icon {
+  font-size: 1.15rem;
+}
+
+/* 13. 모달 다이얼로그 */
+.help-dialog {
+  border: none;
+  border-radius: var(--radius-card);
+  padding: 24px;
+  max-width: 440px;
+  margin: auto;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+  background-color: #ffffff;
+}
+
+.help-dialog::backdrop {
+  background-color: rgba(0, 0, 0, 0.4);
+}
+
+.dialog-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.dialog-title {
+  font-size: 1.15rem;
+  font-weight: 700;
+}
+
+.close-button {
+  background: none;
+  border: none;
+  font-size: 1.2rem;
+  cursor: pointer;
+  color: var(--color-muted);
+}
+
+.dialog-body h4 {
+  font-size: 0.95rem;
+  margin: 12px 0 6px;
+}
+
+.dialog-body ul {
+  padding-left: 20px;
+  font-size: 0.9rem;
+  color: var(--color-muted);
+}
+
+.dialog-body p {
+  font-size: 0.85rem;
+  color: var(--color-muted);
+  line-height: 1.6;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
