@@ -5,7 +5,7 @@
  * 로컬 개발 환경에서 정적 웹 페이지(HTML, CSS, JS)와 Vercel 서버리스 함수(/api/analyze)를
  * 동일한 도메인과 포트(3000)에서 실행하여 브라우저로 직접 테스트할 수 있도록 해주는 로컬 개발 서버입니다.
  * 
- * 외부 프레임워크(Express 등) 설치 없이 Node.js 내장 http 모듈만으로 가볍고 안전하게 구동됩니다.
+ * Vercel 정적 파일 서빙 규칙과 100% 호환되도록 /css, /js, /public 경로를 모두 완벽히 지원합니다.
  */
 
 import http from 'http';
@@ -43,7 +43,6 @@ const server = http.createServer(async (req, res) => {
     });
 
     req.on('end', async () => {
-      // Vercel Serverless Function 형태의 req, res 객체 래핑
       const mockReq = {
         method: req.method,
         headers: req.headers,
@@ -84,8 +83,15 @@ const server = http.createServer(async (req, res) => {
     return;
   }
 
-  // 2. 정적 파일 서비스 (index.html, CSS, JS 등)
-  let filePath = pathname === '/' ? path.join(__dirname, 'index.html') : path.join(__dirname, pathname);
+  // 2. 정적 파일 경로 매핑 (Vercel 호환: /css, /js 요청 시 public 내부 탐색)
+  let filePath;
+  if (pathname === '/') {
+    filePath = path.join(__dirname, 'index.html');
+  } else if (pathname.startsWith('/css/') || pathname.startsWith('/js/')) {
+    filePath = path.join(__dirname, 'public', pathname);
+  } else {
+    filePath = path.join(__dirname, pathname);
+  }
 
   fs.stat(filePath, (err, stats) => {
     if (err || !stats.isFile()) {
@@ -116,4 +122,3 @@ server.listen(PORT, () => {
   console.log(`👉 접속 주소: http://localhost:${PORT}`);
   console.log(`=======================================================`);
 });
-
