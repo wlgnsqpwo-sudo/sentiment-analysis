@@ -6,6 +6,7 @@
   "type": "module",
   "scripts": {
     "start": "node server.js",
+    "build": "echo \"Build completed\"",
     "test": "node tests/local-test.js"
   },
   "keywords": [
@@ -22,4 +23,3 @@
     "openai": "^4.86.1"
   }
 }
-
